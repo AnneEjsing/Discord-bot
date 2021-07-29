@@ -1,0 +1,7 @@
+__pycache__
+Fonts
+Graphics
+Temp
+*.log
+secrets.py
+.DS_Store
