@@ -58,7 +58,6 @@ mvp = {
 def get_font(size): return ImageFont.truetype("Fonts/RiformaLL-Bold.otf", size)
 
 def create_graphics_for_match(sched):
-    dl_urls = {}
     for match in sched:
         logger.info(f"Creating graphics for {match['name']}")
         type = get_videogame_type(match)
@@ -72,14 +71,14 @@ def create_graphics_for_match(sched):
             edit_mvp_pics(match, type, match_folder)
         edit_pre_post_pics(match, type, match_folder)
         dl_url = upload_to_dropbox(f"{type}-{match['opponent']}", match_folder)
-        if dl_url != None: dl_urls[match['opponent']] = dl_url
+        match['dl_url'] = dl_url
 
     global used_vic, used_def, used_pre
     used_vic = []
     used_def = []
     used_pre = []
 
-    return dl_urls
+    return sched
 
 def upload_to_dropbox(folder_name, folder_path):
     # Create ZIP

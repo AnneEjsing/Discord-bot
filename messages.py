@@ -85,13 +85,20 @@ def get_match_end_text(match):
     end_text += "See you at the next match. "
     return end_text
 
-def get_match_graphics_text(csgo_urls, lol_urls, is_monday):
+def get_match_graphics_text(csgo_matches, lol_matches, is_monday):
     joke = dadjoke.joke
-    csgo_urls = "".join([f"{g.EMOJIS.CSGO} VS {opponent} {url} \n" for opponent, url in csgo_urls.items()]) if csgo_urls else ""
-    lol_urls = "".join([f"{g.EMOJIS.LOL} VS {opponent} {url} \n" for opponent, url in lol_urls.items()]) if lol_urls else ""
+    def get_string(match):
+        videogame_type = get_videogame_type(match)
+        emoji = g.EMOJIS.CSGO if videogame_type == 'csgo' else g.EMOJIS.LOL
+        if is_monday:
+            return f"{emoji} VS {match['opponent']} {match['dl_url']} \n"
+        else:
+            return f"{emoji} VS {match['opponent']} ({match['update_reason']}) {match['dl_url']} \n"
+    
+    strings = "".join(get_string(match) for match in csgo_matches + lol_matches)
     text = f"On a serious note, <@&{g.ROLES.COMCOORDS.id}> & <@&{g.ROLES.SOME.id}>; "
     if is_monday:
         text += f"Match Graphics for this weeks games are now up! Download them here:"
     else:
         text += f"There's an update to the match graphics for this week! Download it here:"
-    return f"{joke}\n\n{text}\n\n{csgo_urls}{lol_urls}\nIf you find any issues with the match graphics, please let Nicolaj know. "
+    return f"{joke}\n\n{text}\n\n{strings}\nIf you find any issues with the match graphics, please let Nicolaj know. "

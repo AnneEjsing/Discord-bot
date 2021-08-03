@@ -32,7 +32,7 @@ async def check_schedule_daily(channel, is_monday):
     changed_matches = schedules_have_changed()
     logger.info(f'Is monday: {is_monday}')
     logger.info(f'Num changed: {len(changed_matches)}')
-    if not (changed_matches or is_monday) or (is_monday and not changed_matches):
+    if not changed_matches:
         logger.info("Does not send new schedule")
         return []
 
@@ -46,7 +46,7 @@ async def check_schedule_daily(channel, is_monday):
     if not is_monday:
         update_text = "**The schedule has been updated** \n"
         for reason, matches in groupby(changed_matches, lambda x: x['update_reason']):
-            update_text += '\n*Added: New match(es):*\n' if reason == 'new' else f'\n*Added: New {reason} for match(es):*\n'
+            update_text += f'\n*Update ({reason}):*\n'
             update_text += "".join([f"Astralis vs {match['opponent']}\n" for match in list(matches)])
         await channel.send(update_text)
     return changed_matches
@@ -91,7 +91,7 @@ def schedules_have_changed():
     old_sched = current_csgo + current_csgo_talent + current_lol
     changed_matches = [m for m in new_sched if not any(m['slug'] == y['slug'] for y in old_sched)]
     for match in changed_matches:
-        match['update_reason'] = 'new'
+        match['update_reason'] = 'New match'
     
     # If any scheduled time has changed or new opponent
     for cur in old_sched:
@@ -101,11 +101,11 @@ def schedules_have_changed():
         # If scheduled time has changed, but disregard matches already played
         if cur['opponent'] != new['opponent']:
             logger.info(f'Found new opponent for match: {new["name"]}')
-            new['update_reason'] = 'opponent'
+            new['update_reason'] = 'New opponent'
             changed_matches.append(new)
         elif cur['scheduled_at'] != new['scheduled_at'] and datetime.strptime(new['scheduled_at'], '%Y-%m-%dT%H:%M:%SZ') >= datetime.today():
             logger.info(f'Found new scheduled match time for match: {new["name"]}')
-            new['update_reason'] = 'time'
+            new['update_reason'] = 'New time'
             changed_matches.append(new)
     
     return changed_matches

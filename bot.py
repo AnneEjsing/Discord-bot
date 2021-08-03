@@ -75,10 +75,12 @@ def next_hour():
 
 async def generate_for_new(is_monday, changed_matches):
     csgo_matches = list(filter(lambda match: (utils.get_videogame_type(match) == 'csgo'), changed_matches))
+    csgo_matches = match_graphics.create_graphics_for_match(csgo_matches) if csgo_matches else []
+    
     lol_matches = list(filter(lambda match: (utils.get_videogame_type(match) == 'lol'), changed_matches))
-    csgo_dl_urls = match_graphics.create_graphics_for_match(csgo_matches) if csgo_matches else None
-    lol_dl_urls = match_graphics.create_graphics_for_match(lol_matches) if lol_matches else None
-    text = messages.get_match_graphics_text(csgo_dl_urls, lol_dl_urls, is_monday)
+    lol_matches = match_graphics.create_graphics_for_match(lol_matches) if lol_matches else []
+    
+    text = messages.get_match_graphics_text(csgo_matches, lol_matches, is_monday)
     await g.CHANNELS.COMCOORDS.send(text)
 
 
