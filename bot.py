@@ -61,7 +61,7 @@ async def background_task_hourly():
 
         # If monday or the schedule has changed post match graphics to com coords channel
         if changed_matches:
-            changed_matches = list(filter(lambda match: (match['update_reason'] != 'time'), changed_matches))
+            changed_matches = list(filter(lambda match: ('Astralis Talent' not in match['name']), changed_matches))
             if changed_matches:
                 await generate_for_new(is_monday, changed_matches)
 
